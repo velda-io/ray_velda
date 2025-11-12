@@ -1,0 +1,42 @@
+cluster_name: velda
+
+provider:
+  type: external
+  module: ray_velda.VeldaNodeProvider  # python module path with your NodeProvider subclass
+  use_internal_ips: true
+
+auth: {}
+# pool is the only required fields in node_config for Velda.
+available_node_types:
+  ray.head.default:
+    resources: {"CPU": 1}
+    max_workers: 3
+    node_config: {"pool": "shell"}
+  worker.default:
+    resources: {"CPU": 4}
+    min_workers: 0
+    max_workers: 50
+    node_config: {"pool": "cpu-4"}
+
+head_node_type: ray.head.default
+max_workers: 50
+
+# Global autoscaler knobs (optional)
+upscaling_speed: 1.0
+idle_timeout_minutes: 10
+
+# Empty setup commands for cluster launcher's checking.
+# Velda always sync packages and files before running these commands.
+initialization_commands: []
+setup_commands: []
+head_setup_commands: []
+worker_setup_commands: []
+
+# The autoscaling-config must have same absolute path as current file.
+head_start_ray_commands: ['ray start --head --autoscaling-config ~/raytest/ray_config.yaml --port=6379']
+worker_start_ray_commands: ['ray start --address=$RAY_HEAD_IP:6379']
+
+# This is not supported.
+file_mounts: {}
+# All files are synced via Velda
+cluster_synced_files: []

@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ray-velda"
+version = "0.1.0"
+description = "Ray node autoscaler based on Velda"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = ["ray>=2.8"]
+
+[project.urls]
+"Homepage" = "https://example.local/"
