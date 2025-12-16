@@ -34,7 +34,6 @@ class VeldaNodeProvider(NodeProvider):
         self.cluster_name = 'ray-' + cluster_name
 
         # Configuration
-        self.pool = provider_config.get("pool", "shell")
         self.node_prefix = provider_config.get("node_prefix", "ray-worker")
 
         # Node tracking
@@ -68,15 +67,13 @@ class VeldaNodeProvider(NodeProvider):
     def create_node(self, node_config: Dict[str, Any], tags: Dict[str, str], count: int) -> Optional[Dict[str, Any]]:
         """
         Create new nodes using vrun command.
-
-        Command format: vbatch -P [pool] -s [cluster-name] --force-new-session sleep inf
         """
         result = dict()
         merged_tags = ','.join([f"{k}={v}" for k, v in tags.items()])
         for i in range(count):
             cmd = [
                 "vrun",
-                "-P", self.pool,
+                "-P", node_config.get('pool', 'shell'),
                 '--new-session',
                 '--keep-alive',
                 '--tty=no',
@@ -120,7 +117,6 @@ class VeldaNodeProvider(NodeProvider):
         nodes = subprocess.run([
             "velda",
             "ls",
-            #"-s", self.cluster_name,
             "-o", "json"],
             capture_output=True, check=True)
         node_list = json.loads(nodes.stdout)
